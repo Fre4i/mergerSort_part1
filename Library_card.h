@@ -1,6 +1,7 @@
 #ifndef __LIBRARY_CARD__
 #define __LIBRARY_CARD__
 #include <iostream>
+#include <string>
 
 using namespace std;
 
@@ -13,6 +14,10 @@ class Library_card
 	string date_start;
 	string date_end;
 public:
+
+	friend ifstream& operator>>(ifstream& is, Library_card& en);
+	friend ofstream& operator<<(ofstream& os, const Library_card& en);
+
 	Library_card() {};
 	Library_card(
 		int num_ticket1,
@@ -33,6 +38,15 @@ public:
 	void print_inf()
 	{
 		cout << num_ticket << '\t' << num_inventory << '\t' << author << '\t' << title << '\t' << date_start << '\t' << date_end << endl;
+	};
+	string toString()
+	{
+		return to_string(num_ticket) + '\t' +
+			to_string(num_inventory) + '\t' +
+			author + '\t' +
+			title + '\t' +
+			date_start + '\t' +
+			date_end;
 	};
 };
 

@@ -7,6 +7,10 @@
 
 using namespace std;
 
+//Перегрузка записи в файлы
+ifstream& operator>>(istream& is, Library_card& en);
+//ofstream& operator<<(ostream& os, const Entry2& en);
+
 //Работа с файлами
 void initFiles(int size);
 void clearFiles();
@@ -16,8 +20,8 @@ void printFiles();
 void mergerSort(int n, int size);
 void mergeInA(int n, int size);
 
-////Компаратор
-//bool comp(Library_card first, Library_card second);
+//Компаратор
+bool comp(Library_card first, Library_card second);
 
 int main()
 {
@@ -30,10 +34,10 @@ int main()
 
 	printFiles();
 
-	//for (int i = 0; pow(2, i) < len; i++)
-	//	mergerSort((int)pow(2, i), len);
+	for (int i = 0; pow(2, i) < len; i++)
+		mergerSort((int)pow(2, i), len);
 
-	mergerSort(2, len);
+	//mergerSort(2, len);
 
 	printFiles();
 
@@ -197,6 +201,7 @@ void mergerSort(int n, int size)
 		}
 		inA.close();
 	}
+	mergeInA(n, size);
 }
 
 void mergeInA(int n, int size)
@@ -216,30 +221,66 @@ void mergeInA(int n, int size)
 			{
 				string s;
 				int num;
-				bool b = true;
+				bool b = false;
 				if (size % 2 != 0)
 				{
-					size = size + 1;
-					b = false;
+					size -= 1;
+					b = true;
 				}
-				else size = size / 2;
+				/*size = size / 2;*/
 
 				vector<Library_card> vec;
 
+				int t1, t2;
+				string s1, s2, s3, s4;
+
+				int count = 0;
 				for (int i = 0; i < size;)
 				{
-					for (;i < n;i++)
+					for (int j = 0; j < n; j+=2)
 					{
-						inB >> num;
-						getline(inB, s, '\n');
+						inB >> t1;
+						inB >> t2;
+						getline(inB, s1, '\t');
+						getline(inB, s2, '\t');
+						getline(inB, s3, '\t');
+						getline(inB, s4, '\n');
+						Library_card lbB(t1, t2, s1, s2, s3, s4);
+						vec.push_back(lbB);
 
+						inC >> t1;
+						inC >> t2;
+						getline(inC, s1, '\t');
+						getline(inC, s2, '\t');
+						getline(inC, s3, '\t');
+						getline(inC, s4, '\n');
+						Library_card lbC(t1, t2, s1, s2, s3, s4);
+						vec.push_back(lbC);
+						i+=2;
 					}
+					sort(vec.begin(), vec.end(), comp);
+					for (vector<Library_card>::iterator it = vec.begin(); it < vec.end(); it++)
+					{
+						outA << (*it).toString() << '\n';
+					}
+					vec.clear();
 				}
+
 				if (b)
 				{
 					getline(inB, s, '\n');
 					outA << s << '\n';
 				}
+
+				/*for (int i = 0; i < size;)
+				{
+
+				}
+				if (b)
+				{
+					getline(inB, s, '\n');
+					outA << s << '\n';
+				}*/
 
 
 				inC.close();
@@ -248,4 +289,28 @@ void mergeInA(int n, int size)
 		}
 		outA.close();
 	}
+}
+
+bool comp(Library_card first, Library_card second) { return first.get_num_ticket() < second.get_num_ticket(); }
+
+ifstream& operator>>(ifstream& is, Library_card& en)
+{
+	is >> en.num_ticket;
+	is >> en.num_inventory;
+	is >> en.author;
+	is >> en.title;
+	is >> en.date_start;
+	is >> en.date_end;
+	return is;
+}
+
+ofstream& operator<<(ofstream& os, const Library_card& en)
+{
+	os << en.num_ticket << ' ' <<
+		en.num_inventory << ' ' <<
+		en.author << ' ' <<
+		en.title << ' ' <<
+		en.date_start << ' ' <<
+		en.date_end << ' ';
+	return os;
 }
