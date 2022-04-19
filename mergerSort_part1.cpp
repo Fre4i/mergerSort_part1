@@ -8,8 +8,8 @@
 using namespace std;
 
 //Перегрузка записи в файлы
-ifstream& operator>>(istream& is, Library_card& en);
-//ofstream& operator<<(ostream& os, const Entry2& en);
+ifstream& operator>>(ifstream& is, Library_card& en);
+ofstream& operator<<(ofstream& os, const Library_card& en);
 
 //Работа с файлами
 void initFiles(int size);
@@ -34,10 +34,10 @@ int main()
 
 	printFiles();
 
-	for (int i = 0; pow(2, i) < len; i++)
-		mergerSort((int)pow(2, i), len);
+	//for (int i = 0; pow(2, i) < len; i++)
+	//	mergerSort((int)pow(2, i), len);
 
-	//mergerSort(2, len);
+	mergerSort(2, len);
 
 	printFiles();
 
@@ -158,7 +158,7 @@ void mergerSort(int n, int size)
 			outC.open("C.txt");
 			if (outC)
 			{
-				int count = 0;
+				/*int count = 0;
 				bool b = true;
 
 				string t;
@@ -193,6 +193,42 @@ void mergerSort(int n, int size)
 							outC << t << '\n';
 						}
 					}
+				}*/
+
+				int count = 0;
+				bool b = true;
+				Library_card t;
+
+				while (!inA.eof())
+				{
+					if (b)
+					{
+						if (count == n)
+						{
+							b = false;
+							count = 0;
+							outC << t;
+						}
+						else
+						{
+							count++;
+							outB << t;
+						}
+					}
+					else
+					{
+						if (count == n)
+						{
+							b = true;
+							count = 0;
+							outB << t;
+						}
+						else
+						{
+							count++;
+							outC << t;
+						}
+					}
 				}
 
 				outC.close();
@@ -201,7 +237,7 @@ void mergerSort(int n, int size)
 		}
 		inA.close();
 	}
-	mergeInA(n, size);
+	//mergeInA(n, size);
 }
 
 void mergeInA(int n, int size)
@@ -311,6 +347,6 @@ ofstream& operator<<(ofstream& os, const Library_card& en)
 		en.author << ' ' <<
 		en.title << ' ' <<
 		en.date_start << ' ' <<
-		en.date_end << ' ';
+		en.date_end << '\n';
 	return os;
 }
