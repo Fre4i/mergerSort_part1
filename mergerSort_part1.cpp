@@ -18,7 +18,7 @@ void printFiles();
 
 //Методы алгоритма сортировки
 void mergerSort(int n, int size);
-void mergeInA(int n, int size);
+void mergeInA(int n, int size, int len_B, int len_C);
 
 //Компаратор
 bool comp(Library_card first, Library_card second);
@@ -34,14 +34,24 @@ int main()
 
 	printFiles();
 
-	//for (int i = 0; pow(2, i) < len; i++)
-	//	mergerSort((int)pow(2, i), len);
-
-	mergerSort(2, len);
-
+	for (int i = 0; pow(2, i) < len; i++)
+	{
+		//cout << "\n\n" << pow(2, i) << "\n\n";
+		mergerSort((int)pow(2, i), len);
+		//printFiles();
+	}
+	//mergerSort(1, len);
+	//cout << "\n\n1111111111111111\n";
+	//printFiles();
+	//mergerSort(2, len);
+	//cout << "\n\n2222222222222222\n";
+	//printFiles();
+	//cout << "\n\n";
+	//mergerSort(4, len);
+	//cout << "\n\n3333333333333333\n";
 	printFiles();
 
-    return 0;
+	return 0;
 }
 
 //Работа с файлами
@@ -50,8 +60,8 @@ void initFiles(int size)
 	ofstream outA;
 	outA.open("A.txt");
 
-	string arr_autors[] = { "В.А. Голубев", "Г.В. Александров", "В.С. Киров", "К.С. Андропов", "У.Е. Куницын" };
-	string arr_books[] = { "Высшая математика", "Физика", "Правоведение", "Программирование", "Аналитическая геометрия и алгебра" };
+	string arr_autors[] = { "В.А.Голубев", "Г.В.Александров", "В.С.Киров", "К.С.Андропов", "У.Е.Куницын" };
+	string arr_books[] = { "Высшая_математика", "Физика", "Правоведение", "Программирование", "Аналитическая_геометрия_и_алгебра" };
 	string arr_date_start[] = { "14.09.2021", "04.10.2021", "03.11.2021", "14.09.2021", "01.10.2021" };
 	string arr_date_end[] = { "15.05.2022", "04.04.2022", "03.06.2022", "14.05.2022", "01.05.2022" };
 
@@ -60,12 +70,24 @@ void initFiles(int size)
 		//Инициализация файла A
 		for (int i = 0; i < size; i++)
 		{
-			outA << rand() % size + 1 << '\t'
+			/*outA << rand() % size + 1 << '\t'
 							<< rand() % 10 + 1 << '\t'
 							<< arr_autors[rand() % 5 + 0] << '\t'
 							<< arr_books[rand() % 5 + 0] << '\t'
 							<< arr_date_start[rand() % 5 + 0] << '\t'
-							<< arr_date_end[rand() % 5 + 0] << '\n';
+							<< arr_date_end[rand() % 5 + 0] << '\n';*/
+
+			Library_card lb(
+				//rand() % size + 1,
+				size - i,
+				i + 1,
+				arr_autors[rand() % 5 + 0],
+				arr_books[rand() % 5 + 0],
+				arr_date_start[rand() % 5 + 0],
+				arr_date_end[rand() % 5 + 0]
+			);
+
+			outA << lb;
 		}
 
 		outA.close();
@@ -100,14 +122,14 @@ void printFiles()
 
 	if (inA)
 	{
+		Library_card t;
 		while (!inA.eof())
 		{
-			string t;
-			getline(inA, t, '\n');
-			cout << t << endl;
+			inA >> t;
+			t.print_inf();
 		}
+		inA.close();
 	}
-	inA.close();
 
 	//Содержимое файла B
 	cout << "\n\nСодержимое файла B\n";
@@ -116,14 +138,14 @@ void printFiles()
 
 	if (inB)
 	{
+		Library_card t;
 		while (!inB.eof())
 		{
-			string t;
-			getline(inB, t, '\n');
-			cout << t << endl;
+			inB >> t;
+			t.print_inf();
 		}
+		inB.close();
 	}
-	inB.close();
 
 	//Содержимое файла C
 	cout << "\n\nСодержимое файла C\n";
@@ -132,14 +154,14 @@ void printFiles()
 
 	if (inC)
 	{
+		Library_card t;
 		while (!inC.eof())
 		{
-			string t;
-			getline(inC, t, '\n');
-			cout << t << endl;
+			inC >> t;
+			cout << t.toString() << '\n';
 		}
+		inC.close();
 	}
-	inC.close();
 }
 
 //Сортировка
@@ -147,6 +169,9 @@ void mergerSort(int n, int size)
 {
 	ifstream inA;
 	ofstream outB, outC;
+
+	int len_B = 0;
+	int len_C = 0;
 
 	inA.open("A.txt");
 
@@ -158,61 +183,26 @@ void mergerSort(int n, int size)
 			outC.open("C.txt");
 			if (outC)
 			{
-				/*int count = 0;
+				Library_card lb;
+
 				bool b = true;
-
-				string t;
-				while (!inA.eof())
-				{
-					getline(inA, t, '\n');
-					if (b)
-					{
-						if (count == n)
-						{
-							b = false;
-							count = 0;
-							outC << t << '\n';
-						}
-						else
-						{
-							count++;
-							outB << t << '\n';
-						}
-					}
-					else
-					{
-						if (count == n)
-						{
-							b = true;
-							count = 0;
-							outB << t << '\n';
-						}
-						else
-						{
-							count++;
-							outC << t << '\n';
-						}
-					}
-				}*/
-
 				int count = 0;
-				bool b = true;
-				Library_card t;
 
 				while (!inA.eof())
 				{
+					//Переключение записи между A и B
 					if (b)
 					{
 						if (count == n)
 						{
 							b = false;
 							count = 0;
-							outC << t;
 						}
 						else
 						{
+							inA >> lb;
+							outB << lb;
 							count++;
-							outB << t;
 						}
 					}
 					else
@@ -221,29 +211,29 @@ void mergerSort(int n, int size)
 						{
 							b = true;
 							count = 0;
-							outB << t;
 						}
 						else
 						{
+							inA >> lb;
+							outC << lb;
 							count++;
-							outC << t;
 						}
 					}
 				}
-
 				outC.close();
 			}
 			outB.close();
 		}
 		inA.close();
 	}
-	//mergeInA(n, size);
+	mergeInA(n, size, len_B, len_C);
 }
 
-void mergeInA(int n, int size)
+void mergeInA(int n, int size, int len_B, int len_C)
 {
 	ofstream outA;
 	ifstream inB, inC;
+
 
 	outA.open("A.txt");
 
@@ -255,67 +245,102 @@ void mergeInA(int n, int size)
 			inC.open("C.txt");
 			if (inC)
 			{
-				string s;
-				int num;
-				bool b = false;
-				if (size % 2 != 0)
-				{
-					size -= 1;
-					b = true;
-				}
-				/*size = size / 2;*/
+				Library_card t1;
+				Library_card t2;
 
+				vector<Library_card> vec1;
+				vector<Library_card> vec2;
 				vector<Library_card> vec;
 
-				int t1, t2;
-				string s1, s2, s3, s4;
-
+				bool b = true;
 				int count = 0;
-				for (int i = 0; i < size;)
-				{
-					for (int j = 0; j < n; j+=2)
-					{
-						inB >> t1;
-						inB >> t2;
-						getline(inB, s1, '\t');
-						getline(inB, s2, '\t');
-						getline(inB, s3, '\t');
-						getline(inB, s4, '\n');
-						Library_card lbB(t1, t2, s1, s2, s3, s4);
-						vec.push_back(lbB);
 
-						inC >> t1;
-						inC >> t2;
-						getline(inC, s1, '\t');
-						getline(inC, s2, '\t');
-						getline(inC, s3, '\t');
-						getline(inC, s4, '\n');
-						Library_card lbC(t1, t2, s1, s2, s3, s4);
-						vec.push_back(lbC);
-						i+=2;
-					}
-					sort(vec.begin(), vec.end(), comp);
-					for (vector<Library_card>::iterator it = vec.begin(); it < vec.end(); it++)
+				while (!inB.eof() || !inC.eof())
+				{
+					for (int i = 0; i < n; i++)
 					{
-						outA << (*it).toString() << '\n';
+						if (!inB.eof())
+						{
+							inB >> t1;
+							vec1.push_back(t1);
+						}
+					}
+
+					for (int i = 0; i < n; i++)
+					{
+						if (!inC.eof())
+						{
+							inC >> t2;
+							vec2.push_back(t2);
+						}
+					}
+					if (vec1.size() > 0 && vec2.size() > 0)
+					{
+						if (vec1.back().get_num_ticket() < vec2.back().get_num_ticket())
+						{
+							vec.insert(vec.end(), vec1.begin(), vec1.end());
+							vec.insert(vec.end(), vec2.begin(), vec2.end());
+						}
+						/*else if (vec1.back().get_num_ticket() == vec2.back().get_num_ticket())
+						{
+							int ind1 = vec1.size() - 2;
+							int ind2 = vec2.size() - 2;
+							if (ind1 <= 0)
+								ind1 = vec1.size() - 1;
+							if (ind2 <= 0)
+								ind2 = vec2.size() - 1;
+
+							if (vec1[ind1].get_num_ticket() < vec2[ind2].get_num_ticket())
+							{
+								vec.insert(vec.end(), vec1.begin(), vec1.end());
+								vec.insert(vec.end(), vec2.begin(), vec2.end());
+							}
+							else
+							{
+								vec.insert(vec.end(), vec2.begin(), vec2.end());
+								vec.insert(vec.end(), vec1.begin(), vec1.end());
+							}
+						}*/
+						else
+						{
+							vec.insert(vec.end(), vec2.begin(), vec2.end());
+							vec.insert(vec.end(), vec1.begin(), vec1.end());
+						}
+						for (vector<Library_card>::iterator it = vec.begin(); it < vec.end(); it++)
+							outA << *it;
+					}
+					else
+					{
+						if (vec1.size() == 0)
+						{
+							for (vector<Library_card>::iterator it = vec2.begin(); it < vec2.end(); it++)
+								outA << *it;
+						}
+						else if (vec2.size() == 0)
+						{
+							for (vector<Library_card>::iterator it = vec1.begin(); it < vec1.end(); it++)
+								outA << *it;
+						}
 					}
 					vec.clear();
+					vec1.clear();
+					vec2.clear();
 				}
-
-				if (b)
+				/*if (b)
 				{
-					getline(inB, s, '\n');
-					outA << s << '\n';
+					while (!inC.eof())
+					{
+						inC >> t1;
+						outA << t1;
+					}
 				}
-
-				/*for (int i = 0; i < size;)
+				else
 				{
-
-				}
-				if (b)
-				{
-					getline(inB, s, '\n');
-					outA << s << '\n';
+					while (!inB.eof())
+					{
+						inB >> t1;
+						outA << t1;
+					}
 				}*/
 
 
@@ -342,11 +367,11 @@ ifstream& operator>>(ifstream& is, Library_card& en)
 
 ofstream& operator<<(ofstream& os, const Library_card& en)
 {
-	os << en.num_ticket << ' ' <<
-		en.num_inventory << ' ' <<
-		en.author << ' ' <<
-		en.title << ' ' <<
-		en.date_start << ' ' <<
-		en.date_end << '\n';
+	os << '\t' << en.num_ticket << '\t' <<
+		en.num_inventory << '\t' <<
+		en.author << '\t' <<
+		en.title << '\t' <<
+		en.date_start << '\t' <<
+		en.date_end;
 	return os;
 }
